@@ -32,4 +32,9 @@ app.get('/api/summoner/:summonerName', (req, res) => {
 	})
 });
 
+app.get('/api/account/:accountId/match-history/', (req, res) => {
+	const accountId = req.params.accountId;
+	routes.getAllMatchData(accountId)
+})
+
 app.listen(PORT, () => console.log(`app listening on PORT ${PORT}`))
