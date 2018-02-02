@@ -48,32 +48,12 @@ const getChampions = (championIds) => {
 	return axios.all(requests);
 }
 
-const getItemData = (itemIds) => {
-	console.log('in getItemData')
-	const all_requests = [];
-	for(let i = 0; i < itemIds.length; i++){
-		const requests = []
-		console.log('itemId array: ', itemIds[i])
-		for(let j = 0; j < itemIds[i].length; j++){
-			//https://na1.api.riotgames.com/lol/static-data/v3/items/3073?locale=en_US&tags=image&api_key=RGAPI-30565e17-5e97-408a-9e2f-f411f7028e1c
-			const itemId = itemIds[i][j];
-			console.log('itemId', itemId)
-			//itemIds[i][j] = axios.get(`${LOL_URL}/static-data/v3/items/${itemId}?locale=en_US&tags=image&api_key=${LOL_API_KEY}`)
-			requests.push(axios.get(`${LOL_URL}/static-data/v3/items/${itemId}?locale=en_US&tags=image&api_key=${LOL_API_KEY}`))
-		}
-		all_requests.push(requests);
-		console.log('all_requests', all_requests)
-	}
-	return all_requests;
+const getItemsData = () => {
+	return axios.get(`http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/item.json`);
 }
 
 const getSpellsData = () => {
 	return axios.get(`http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/summoner.json`);
-}
-
-const getRunesData = () => {
-	// https://na1.api.riotgames.com/lol/static-data/v3/runes?locale=en_US&tags=image&api_key=RGAPI-30565e17-5e97-408a-9e2f-f411f7028e1c
-	return axios.get(`${LOL_URL}/static-data/v3/runes?locale=en_US&tags=image&api_key=${LOL_API_KEY}`)
 }
 
 async function getAllMatchData(accountId, startIndex, endIndex, callback){
@@ -84,22 +64,30 @@ async function getAllMatchData(accountId, startIndex, endIndex, callback){
 		
 		const matchData = matchesData.map((match) => { return match.data });
 		const parsedMatchData = helpers.matchParser(matchData, accountId);
-		/*
+		
 		let championIds = parsedMatchData.map((match) => { return match.championId; });
+		/*
 		const champions = await getChampions(championIds);
 		champions.map((champion, index) => {
 			parsedMatchData[index].champion = champion.data
-		});*/
-		/*
-		let itemIds = parsedMatchData.map((match) => { return match.items });
-		const itemIdsData = getItemData(itemIds);
+		});
 		*/
 		
-		const runes = await getRunesData();
-		const runesData = runes.data.data;
+		let itemIds = parsedMatchData.map((match) => { return match.items });
+		const items = await getItemsData();
+		const itemData = items.data.data;
+		const retrievedItems = helpers.retrieveItemData(itemIds, itemData);
 
+		let spellIds = parsedMatchData.map((match) => { return match.spells })
 		const spells = await getSpellsData();
-		console.log(spells);
+		const spellsData = spells.data.data;
+		const retrievedSpellItems = helpers.retrieveSpellsData(spellIds, spellsData);
+
+		parsedMatchData.map((match, index) => {
+			match.items = retrievedItems[index];
+			match.spells = retrievedSpellItems[index];
+			return match;
+		})
 
 		callback(null, parsedMatchData);
 
