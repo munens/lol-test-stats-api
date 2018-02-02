@@ -66,12 +66,12 @@ async function getAllMatchData(accountId, startIndex, endIndex, callback){
 		const parsedMatchData = helpers.matchParser(matchData, accountId);
 		
 		let championIds = parsedMatchData.map((match) => { return match.championId; });
-		/*
+		
 		const champions = await getChampions(championIds);
 		champions.map((champion, index) => {
 			parsedMatchData[index].champion = champion.data
 		});
-		*/
+		
 		
 		let itemIds = parsedMatchData.map((match) => { return match.items });
 		const items = await getItemsData();
