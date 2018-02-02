@@ -67,6 +67,10 @@ const getItemData = (itemIds) => {
 	return all_requests;
 }
 
+const getSpellsData = () => {
+	return axios.get(`http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/summoner.json`);
+}
+
 const getRunesData = () => {
 	// https://na1.api.riotgames.com/lol/static-data/v3/runes?locale=en_US&tags=image&api_key=RGAPI-30565e17-5e97-408a-9e2f-f411f7028e1c
 	return axios.get(`${LOL_URL}/static-data/v3/runes?locale=en_US&tags=image&api_key=${LOL_API_KEY}`)
@@ -94,7 +98,8 @@ async function getAllMatchData(accountId, startIndex, endIndex, callback){
 		const runes = await getRunesData();
 		const runesData = runes.data.data;
 
-		console.log(runesData);
+		const spells = await getSpellsData();
+		console.log(spells);
 
 		callback(null, parsedMatchData);
 
