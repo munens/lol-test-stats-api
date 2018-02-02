@@ -16,7 +16,7 @@ const LOL_URL = `https://na1.api.riotgames.com/lol`;
 
 app.use(bodyParser.urlencoded({
   extended: true
-}))
+}));
 app.use(bodyParser.json())
 app.use(methodOverride())
 app.use(cors());
@@ -39,8 +39,10 @@ app.get('/api/account/:accountId/match-history', (req, res) => {
 	routes.getAllMatchData(accountId, startIndex, endIndex, (err, data) => {
 		if(err){
 			console.log(err);
+			res.status(err.response.status);
 		}
-		console.log(data)
+
+		return res.json(data);
 	});
 	
 })

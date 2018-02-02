@@ -49,14 +49,22 @@ const getChampions = (championIds) => {
 }
 
 const getItemData = (itemIds) => {
+	console.log('in getItemData')
+	const all_requests = [];
 	for(let i = 0; i < itemIds.length; i++){
-		for(let j = 0; itemIds[i].length; j++){
+		const requests = []
+		console.log('itemId array: ', itemIds[i])
+		for(let j = 0; j < itemIds[i].length; j++){
 			//https://na1.api.riotgames.com/lol/static-data/v3/items/3073?locale=en_US&tags=image&api_key=RGAPI-30565e17-5e97-408a-9e2f-f411f7028e1c
 			const itemId = itemIds[i][j];
-			itemIds[i][j] = axios.get(`${LOL_URL}/static-data/v3/items/${itemId}?locale=en_US&tags=image&api_key=${LOL_API_KEY}`)
+			console.log('itemId', itemId)
+			//itemIds[i][j] = axios.get(`${LOL_URL}/static-data/v3/items/${itemId}?locale=en_US&tags=image&api_key=${LOL_API_KEY}`)
+			requests.push(axios.get(`${LOL_URL}/static-data/v3/items/${itemId}?locale=en_US&tags=image&api_key=${LOL_API_KEY}`))
 		}
+		all_requests.push(requests);
+		console.log('all_requests', all_requests)
 	}
-	return itemIds;
+	return all_requests;
 }
 
 const getRunesData = () => {
@@ -78,10 +86,17 @@ async function getAllMatchData(accountId, startIndex, endIndex, callback){
 		champions.map((champion, index) => {
 			parsedMatchData[index].champion = champion.data
 		});*/
+		/*
 		let itemIds = parsedMatchData.map((match) => { return match.items });
+		const itemIdsData = getItemData(itemIds);
+		*/
+		
+		const runes = await getRunesData();
+		const runesData = runes.data.data;
 
-		const runesData = await getRunesData();
 		console.log(runesData);
+
+		callback(null, parsedMatchData);
 
 	} catch(err) {
 		console.log('getAllMatchData', err);

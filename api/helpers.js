@@ -19,25 +19,26 @@ module.exports.matchParser = (matches, accountId) => {
 
 		const participantData = getParticipantData(match.participants, participantId);
 		
+		const spell1Id = participantData.spell1Id;
+		const spell2Id = participantData.spell2Id;
+
 		const championId = participantData.championId;
 		
 		const stats = participantData.stats;
 		const timeline = participantData.timeline;
-
+		
 		const level = stats.champLevel;
 		const kills = stats.kills;
 		const deaths = stats.deaths;
 		const assists = stats.assists;
 		const outcome = stats.win;
-		let champion = {}
+		const totalCreepScore = stats.totalMinionsKilled;
+		const averageCreepScore = totalCreepScore / game_length;
 
 		let items = [];
 		for(let i = 0; i < 6; i++){
 			items.push(stats[`item${i}`]);
 		}
-
-		const creepsPerMinDeltas = timeline.creepsPerMinDeltas;
-		const csDiffPerMinDeltas = timeline.csDiffPerMinDeltas;		
 		
 		return {
 			game_length: game_length,
@@ -45,8 +46,9 @@ module.exports.matchParser = (matches, accountId) => {
 			kda: { kills: kills, deaths: deaths, assists: assists },
 			championId: championId,
 			items: items,
-			creepsPerMinDeltas: creepsPerMinDeltas,
-			csDiffPerMinDeltas: csDiffPerMinDeltas
+			spells: [ spell1Id, spell2Id], 
+			totalCreepScore: totalCreepScore,
+			averageCreepScore: averageCreepScore
 		};
 	});
 }
