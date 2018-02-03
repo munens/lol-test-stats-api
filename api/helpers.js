@@ -23,6 +23,17 @@ module.exports.retrieveSpellsData = (spellIds, spellData) => {
 	return spellIds;
 }
 
+module.exports.retrieveChampionData = (championIds, championData) => {
+	for(let i = 0; i < championIds.length; i++){	
+		for (let key of Object.keys(championData)) {
+			if(championData[key].key == championIds[i]){
+				championIds[i] = championData[key];
+			}
+		}	
+	}
+	return championIds;
+}
+
 module.exports.retrieveItemData = (itemIds, itemData) => {
 	for(let i = 0; i < itemIds.length; i++){
 		for(let j = 0; j < itemIds[i].length; j++){	

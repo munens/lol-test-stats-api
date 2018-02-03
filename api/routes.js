@@ -39,13 +39,8 @@ const getAllMatchHistoryData = (matches) => {
 	return axios.all(requests);
 };
 
-const getChampions = (championIds) => {
-	let requests = []
-	for(let i = 0; i < championIds.length; i++){
-		const championId = championIds[i];
-		requests.push(axios.get(`${LOL_URL}/static-data/v3/champions/${championId}?locale=en_US&tags=image&api_key=${LOL_API_KEY}`));
-	}
-	return axios.all(requests);
+const getChampions = () => {
+	return axios.get(`http://ddragon.leagueoflegends.com/cdn/6.24.1/data/en_US/champion.json`);
 }
 
 const getItemsData = () => {
@@ -66,12 +61,9 @@ async function getAllMatchData(accountId, startIndex, endIndex, callback){
 		const parsedMatchData = helpers.matchParser(matchData, accountId);
 		
 		let championIds = parsedMatchData.map((match) => { return match.championId; });
-		
 		const champions = await getChampions(championIds);
-		champions.map((champion, index) => {
-			parsedMatchData[index].champion = champion.data
-		});
-		
+		const championsData = champions.data.data;
+		const retrievedChampionItems = helpers.retrieveChampionData(championIds, championsData);
 		
 		let itemIds = parsedMatchData.map((match) => { return match.items });
 		const items = await getItemsData();
@@ -84,6 +76,7 @@ async function getAllMatchData(accountId, startIndex, endIndex, callback){
 		const retrievedSpellItems = helpers.retrieveSpellsData(spellIds, spellsData);
 
 		parsedMatchData.map((match, index) => {
+			match.champion = retrievedChampionItems[index];
 			match.items = retrievedItems[index];
 			match.spells = retrievedSpellItems[index];
 			return match;

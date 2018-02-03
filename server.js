@@ -8,11 +8,7 @@ const methodOverride = require('method-override');
 const app = express();
 
 const routes = require(`./api/routes`);
-
 const PORT = process.env.PORT || 4000;
-const LOL_API_KEY = process.env.LOL_API_KEY;
-
-const LOL_URL = `https://na1.api.riotgames.com/lol`;
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -41,7 +37,6 @@ app.get('/api/account/:accountId/match-history', (req, res) => {
 			console.log(err);
 			res.status(err.response.status);
 		}
-
 		return res.json(data);
 	});
 	
